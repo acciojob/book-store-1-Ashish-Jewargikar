@@ -42,24 +42,85 @@ public class BookController {
         this.id = 1;
     }
 
-    // post request /create-book
-    // pass book as request body
+   
     @PostMapping("/create-book")
     public ResponseEntity<Book> createBook(@RequestBody Book book){
         // Your code goes here.
+    	book.setId(id++);
+        bookList.add(book);
         return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
-    // get request /get-book-by-id/{id}
-    // pass id as path variable
-    // getBookById()
+      
+    @GetMapping("/get-book-by-id/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable int id){
+    	for(Book book:bookList) {
+    		if(book.getId()==id) {
+    			return new ResponseEntity<>(book,HttpStatus.OK);
+    		}
+    	}
+    	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+    }
+   
+    @GetMapping("/get-all-books")
+    public ResponseEntity<List<Book>> getAllBooks(){
+    	return new ResponseEntity<>(bookList,HttpStatus.OK);
+    }
+    
+    @GetMapping("/get-books-by-author")
+    public ResponseEntity<List<Book>> getBooksByAuthor(@RequestParam String author) {
+        List<Book> authorBooks = new ArrayList<>();
+        for (Book b : bookList) {
+            if (b.getAuthor().equals(author)) {
+                authorBooks.add(b);
+            }
+        }
+       
+        return new ResponseEntity<>(authorBooks,HttpStatus.OK);
+    }
+      
+    @GetMapping("/get-books-by-genre")
+    public ResponseEntity<List<Book>> getBooksByGenre(@RequestParam String genre){
+    	List<Book> bookByGenre = new ArrayList<>();    
+         for(Book b : bookList) {
+        	 if(b.getGenre().equals(genre)) {
+        		 bookByGenre.add(b);
+        	 }
+         }
+         return new ResponseEntity<>(bookByGenre,HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/delete-book-by-id/{id}")
+    	public ResponseEntity<String> deleteBookById(@PathVariable int id){
+    		for(Book b:bookList) {
+    			if(b.getId()==id) {
+    				bookList.remove(b);
+    				return new ResponseEntity<>("Book with id" +id+"deleted",HttpStatus.OK);
+    			}
+    		}
+    		return new ResponseEntity<>("Book with id "+id+"Not found",HttpStatus.NOT_FOUND);
+    	}
+    
+    @DeleteMapping("/delete-all-books")
+    public ResponseEntity<String>deleteAllBooks(){
+    	bookList.clear();
+    	return new ResponseEntity<>("All Books Deleted",HttpStatus.OK);
+    }
+    }
 
-    // delete request /delete-book-by-id/{id}
-    // pass id as path variable
-    // deleteBookById()
+	// post request /create-book
+	// pass book as request body
 
-    // get request /get-all-books
-    // getAllBooks()
+	// get request /get-book-by-id/{id}
+	// pass id as path variable
+	// getBookById()
+	
+	// delete request /delete-book-by-id/{id}
+	// pass id as path variable
+	// deleteBookById()
+	
+	// get request /get-all-books
+	// getAllBooks()
 
     // delete request /delete-all-books
     // deleteAllBooks()
@@ -71,4 +132,4 @@ public class BookController {
     // get request /get-books-by-genre
     // pass genre name as request param
     // getBooksByGenre()
-}
+
